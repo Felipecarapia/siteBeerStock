@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BeerStock ✦ Gestão de Elite para Depósitos</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #8B5CF6;
+      --primary-dark: #6D28D9;
+      --bg-black: #050505;
+      --bg-card: rgba(13, 13, 15, 0.7);
+      --border: rgba(139, 92, 246, 0.15);
+      --text-main: #FFFFFF;
+      --text-muted: #94A3B8;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: var(--bg-black);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* === BACKGROUND EFFECTS (Quantix Style) === */
+    .glow-header {
+      position: absolute;
+      top: -300px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1200px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+      filter: blur(100px);
+      z-index: -1;
+    }
+
+    .glow-arc {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      box-shadow: 0 0 40px var(--primary);
+      opacity: 0.3;
+      z-index: -1;
+      animation: pulsate 4s ease-in-out infinite;
+    }
+
+    @keyframes pulsate {
+
+      0%,
+      100% {
+        opacity: 0.2;
+        transform: translateX(-50%) scaleX(1);
+      }
+
+      50% {
+        opacity: 0.5;
+        transform: translateX(-50%) scaleX(1.1);
+      }
+    }
+
+    /* === PARTICLES === */
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    @keyframes particle-float {
+      0% {
+        transform: translateY(0);
+        opacity: 0;
+      }
+
+      20% {
+        opacity: 0.4;
+      }
+
+      80% {
+        opacity: 0.4;
+      }
+
+      100% {
+        transform: translateY(-300px);
+        opacity: 0;
+      }
+    }
+
+    .particle {
+      position: absolute;
+      background: var(--primary);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: particle-float 15s linear infinite;
+    }
+
+    /* === NAVBAR (Pill Style) === */
+    header {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      width: 100%;
+      max-width: 1200px;
+      padding: 0 24px;
+    }
+
+    .nav-pill {
+      background: rgba(15, 15, 18, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -1px;
+    }
+
+    .logo-box {
+      width: 36px;
+      height: 36px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-box svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+    }
+
+    .nav-cta {
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 99px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* === HERO SECTION === */
+    .hero {
+      padding: 220px 24px 100px;
+      text-align: center;
+      position: relative;
+    }
+
+    .badge {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--primary);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--primary);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .hero h1 {
+      font-size: 4.8rem;
+      line-height: 1.05;
+      letter-spacing: -3px;
+      max-width: 900px;
+      margin: 0 auto 24px;
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.15rem;
+      max-width: 600px;
+      margin: 0 auto 48px;
+      line-height: 1.6;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 16px 36px;
+      border-radius: 99px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s var(--ease);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-main {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+    }
+
+    .btn-sub {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: #fff;
+    }
+
+    .hero-mockup {
+      margin-top: 100px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .mockup-img {
+      width: 100%;
+      max-width: 1100px;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8);
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+      will-change: transform;
+    }
+
+    /* === PARTNERS === */
+    .partners {
+      padding: 80px 0;
+      text-align: center;
+      opacity: 0.5;
+    }
+
+    .partner-grid {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      flex-wrap: wrap;
+      margin-top: 32px;
+    }
+
+    .partner-logo {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fff;
+      filter: grayscale(1);
+    }
+
+    /* === FEATURES (Quantix Style Cards) === */
+    .section-header {
+      padding: 100px 24px 60px;
+      text-align: center;
+    }
+
+    .section-header h2 {
+      font-size: 3.5rem;
+      letter-spacing: -2px;
+      margin-bottom: 20px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto 100px;
+      padding: 0 24px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      padding: 48px 32px;
+      text-align: left;
+      transition: all 0.3s var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-5px);
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      background: radial-gradient(circle at top center, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .icon-box {
+      width: 56px;
+      height: 56px;
+      background: rgba(139, 92, 246, 0.1);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 32px;
+      border: 1px solid var(--border);
+    }
+
+    .feature-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* === TABS SECTION === */
+    .preview-section {
+      padding: 100px 24px;
+      background: #080808;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+
+    .tab-btn {
+      padding: 12px 28px;
+      border-radius: 99px;
+      background: #111;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .tab-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: none;
+      animation: fadeInUp 0.5s ease forwards;
+      perspective: 1000px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .tab-content img {
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+      cursor: pointer;
+      will-change: transform;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* === FOOTER === */
+    footer {
+      padding: 100px 24px 60px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    /* === PRICING === */
+    .pricing-grid {
+      display: flex;
+      justify-content: center;
+      padding: 0 24px;
+    }
+
+    .price-card {
+      background: #0D0D10;
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s var(--ease);
+      max-width: 450px;
+      width: 100%;
+    }
+
+    .price-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-10px);
+    }
+
+    .price-header {
+      padding: 48px 32px;
+      background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.2), transparent 70%);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .price-header .tag {
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--primary);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      display: inline-block;
+    }
+
+    .price-header h3 {
+      font-size: 1.25rem;
+      margin-bottom: 32px;
+      color: var(--text-muted);
+    }
+
+    .price-val {
+      font-size: 4rem;
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+
+    .price-val span {
+      font-size: 1rem;
+      color: var(--text-muted);
+      letter-spacing: 0;
+      font-weight: 500;
+    }
+
+    .price-body {
+      padding: 48px 32px;
+      flex-grow: 1;
+    }
+
+    .price-body h4 {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 24px;
+    }
+
+    .price-features {
+      list-style: none;
+    }
+
+    .price-features li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .price-features li svg {
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .btn-price {
+      margin-top: 32px;
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      padding: 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      text-align: center;
+      display: block;
+      transition: background 0.3s ease;
+    }
+
+    .btn-price:hover {
+      background: var(--primary-dark);
+    }
+
+    .price-card.featured {
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 50px rgba(139, 92, 246, 0.2);
+      transform: scale(1.05);
+    }
+
+    .price-card.featured:hover {
+      transform: scale(1.06) translateY(-10px);
+    }
+
+    @media (max-width: 1024px) {
+      .hero h1 {
+        font-size: 3.5rem;
+      }
+
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.8rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="glow-header"></div>
+  <div class="glow-arc"></div>
+
+  <div class="particles" id="particle-container"></div>
+
+  <header>
+    <div class="nav-pill">
+      <div class="logo">
+        <img src="img/logo.png" alt="BeerStock Logo" style="height: 32px; width: auto; border-radius: 10px;">
+        <span>BeerStock</span>
+      </div>
+      <nav class="nav-links">
+        <a href="#features">Recursos</a>
+        <a href="#demo">Demo</a>
+        <a href="#precos">Preços</a>
+        <a href="#contato">Contato</a>
+      </nav>
+      <a href="https://wa.me/5571996548831?text=Olá,%20gostaria%20de%20testar%20o%20BeerStock!" class="nav-cta">
+        Começar Agora
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M6 12L10 8L6 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="badge">
+      <div class="badge-dot"></div>
+      ✦ GESTÃO DE ALTA PERFORMANCE
+    </div>
+    <h1>Vendas em alta velocidade. <br> O estoque mais <span style="color: var(--primary)">inteligente.</span></h1>
+    <p>A plataforma definitiva para distribuidoras que buscam precisão matemática, velocidade no caixa e controle total
+      de lotes em uma interface de elite.</p>
+
+    <div class="btn-group">
+      <a href="https://wa.me/5571996548831?text=Olá,%20tenho%20interesse%20no%20BeerStock%20e%20gostaria%20de%20começar%20agora!"
+        class="btn btn-main">
+        Começar Agora
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M7 14L11 9L7 4" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </a>
+      <a href="#demo" class="btn btn-sub">Agendar Demo</a>
+    </div>
+
+    <div class="hero-mockup">
+      <img src="img/Captura de tela 2026-05-10 164437.png" alt="BeerStock Dashboard" class="mockup-img tilt-el">
+    </div>
+  </section>
+
+  <section id="features" class="section-header">
+    <h2>Acelere sua operação com <br> recursos de <span style="color: var(--primary)">alta performance.</span></h2>
+  </section>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="icon-box">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--primary)">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+      </div>
+      <h3>Inteligência de Vendas</h3>
+      <p>Acompanhe o rendimento do seu depósito com gráficos dinâmicos. Saiba exatamente o que está saindo em tempo
+        real.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon-box">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--primary)">
+          <path d="m7.5 4.27 9 5.15"></path>
+          <path
+            d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z">
+          </path>
+          <path d="m3.3 7 8.7 5 8.7-5"></path>
+          <path d="M12 22V12"></path>
+        </svg>
+      </div>
+      <h3>Estoque Granular</h3>
+      <p>Controle unidades, lotes e grades com precisão absoluta, eliminando desperdícios e rupturas no galpão.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon-box">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--primary)">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+        </svg>
+      </div>
+      <h3>Vendas Instantâneas</h3>
+      <p>Frente de caixa desenhado para alta demanda, sem travamentos, com atalhos rápidos e multi-pagamento.</p>
+    </div>
+  </div>
+
+  <section id="demo" class="preview-section">
+    <div class="section-header">
+      <h2>Sua gestão em <span style="color: var(--primary)">tempo real.</span></h2>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('tab-dash')">Dashboard</button>
+      <button class="tab-btn" onclick="showTab('tab-estoque')">Estoque</button>
+      <button class="tab-btn" onclick="showTab('tab-caixa')">Caixa</button>
+    </div>
+
+    <div id="tab-dash" class="tab-content active">
+      <div
+        style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 32px; overflow: hidden; padding: 24px;">
+        <img src="img/Dashboard.png" class="tilt-el" style="width:100%; border-radius: 16px;">
+      </div>
+    </div>
+
+    <div id="tab-estoque" class="tab-content">
+      <div
+        style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 32px; overflow: hidden; padding: 24px;">
+        <img src="img/estoque.png" class="tilt-el" style="width:100%; border-radius: 16px;">
+      </div>
+    </div>
+
+    <div id="tab-caixa" class="tab-content">
+      <div
+        style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 32px; overflow: hidden; padding: 24px;">
+        <img src="img/caixa.png" class="tilt-el" style="width:100%; border-radius: 16px;">
+      </div>
+    </div>
+  </section>
+
+  <section id="precos" class="section-header">
+    <div class="badge">NOSSOS PLANOS</div>
+    <h2>Escolha o plano ideal para <br> o <span style="color: var(--primary)">seu crescimento.</span></h2>
+
+    <div class="pricing-grid" style="margin-top: 60px; text-align: left;">
+      <!-- Plano Vitalício -->
+      <div class="price-card featured">
+        <div class="price-header">
+          <div class="tag" style="background: var(--primary); color: #fff;">OFERTA ÚNICA</div>
+          <h3 style="color: #fff;">Plano Vitalício</h3>
+          <div class="price-val">R$ 1.500<span> pagamento único</span></div>
+          <p style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-top: 16px;">O sistema é seu para sempre.
+            Sem mensalidades ou taxas escondidas.</p>
+        </div>
+        <div class="price-body">
+          <h4>O QUE ESTÁ INCLUSO</h4>
+          <ul class="price-features">
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg> Controle de Estoque</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg> PDV Ultra-veloz (Pix, Cartão e Dinheiro)</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg> Gestão de Investimento e Lucratividade</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg> Alertas de Ruptura de Estoque</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg> Sem Mensalidade</li>
+          </ul>
+          <a href="https://wa.me/5571996548831?text=Olá,%20tenho%20interesse%20no%20Plano%20Vitalício%20de%20R$%201500!%20Como%20faço%20para%20adquirir?"
+            class="btn-price">Adquirir Acesso Vitalício</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="padding-top: 150px;">
+    <div class="logo" style="justify-content: center; margin-bottom: 32px;">
+      <img src="img/logo.png" alt="BeerStock Logo"
+        style="height: 48px; width: auto; border-radius: 12px; margin-right: 12px;">
+      <span>BeerStock</span>
+    </div>
+    <p style="color: var(--text-muted); font-size: 0.9rem;">&copy; 2026 BeerStock. Todos os direitos reservados por
+      BeerStock.</p>
+  </footer>
+
+  <script>
+    function showTab(id) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // Interactive Tilt Animation
+    document.addEventListener('mousemove', (e) => {
+      document.querySelectorAll('.tilt-el').forEach(el => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        if (x > 0 && y > 0 && x < rect.width && y < rect.height) {
+          const xPercent = (x / rect.width - 0.5) * 20; // 20deg max
+          const yPercent = (y / rect.height - 0.5) * -20;
+          el.style.transform = `perspective(1000px) rotateX(${yPercent}deg) rotateY(${xPercent}deg) scale(1.02)`;
+          el.style.boxShadow = `0 40px 100px rgba(139, 92, 246, 0.3)`;
+        } else {
+          el.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)`;
+          el.style.boxShadow = `0 40px 100px -20px rgba(0,0,0,0.8)`;
+        }
+      });
+    });
+
+    // Mouse Move Glow Effect
+    const glow = document.querySelector('.glow-header');
+    document.addEventListener('mousemove', (e) => {
+      const x = e.clientX;
+      const y = e.clientY;
+      glow.style.left = x + 'px';
+      glow.style.top = y + 'px';
+    });
+
+    // Particles Generation
+    const container = document.getElementById('particle-container');
+    for (let i = 0; i < 30; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      const size = Math.random() * 5 + 2 + 'px';
+      particle.style.width = size;
+      particle.style.height = size;
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.top = Math.random() * 100 + '%';
+      particle.style.animationDuration = Math.random() * 10 + 10 + 's';
+      particle.style.animationDelay = Math.random() * -20 + 's';
+      particle.style.opacity = '0';
+      container.appendChild(particle);
+    }
+  </script>
+</body>
+
+</html>
